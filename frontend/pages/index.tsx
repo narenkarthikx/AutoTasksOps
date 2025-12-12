@@ -56,8 +56,16 @@ export default function Home() {
       const data = await response.json()
 
       if (data.success) {
-        addLog(`✓ Workflow generated: ${data.workflowId}`)
-        addLog(`✓ Branch created: ${data.branch}`)
+        addLog(`✓ Workflow generated: ${data.workflow?.id || data.workflow?.name || 'unknown'}`)
+        if (data.git?.branch) {
+          addLog(`✓ Branch created: ${data.git.branch}`)
+        }
+        if (data.workflow?.tasks) {
+          addLog(`✓ Created ${data.workflow.tasks} task(s)`)
+        }
+        if (data.workflow?.scripts) {
+          addLog(`✓ Generated ${data.workflow.scripts.length} script(s)`)
+        }
         setNlInput('')
         fetchWorkflows()
       } else {
@@ -85,11 +93,34 @@ export default function Home() {
 
       if (data.success) {
         // Stream logs if available
+        let hasOutput = false;
         if (data.logs && Array.isArray(data.logs)) {
-          data.logs.forEach((log: string) => addLog(log))
+          data.logs.forEach((log: any) => {
+            // Format log objects properly
+            if (typeof log === 'object') {
+              addLog(`[${log.timestamp || ''}] ${log.level?.toUpperCase() || 'INFO'}: ${log.message || ''}`)
+              // Display output from successful tasks
+              if (log.level === 'success' && log.output) {
+                addLog(`\n📤 Output:\n${log.output}`)
+                hasOutput = true;
+              }
+            } else {
+              addLog(String(log))
+            }
+          })
         }
         addLog(`✓ Workflow completed successfully`)
-        addLog(`Output: ${data.outputPath || 'N/A'}`)
+        
+        // Display outputs from files
+        if (data.outputs && Object.keys(data.outputs).length > 0) {
+          addLog(`\n=== Output Files ===`)
+          Object.entries(data.outputs).forEach(([filename, content]) => {
+            addLog(`📄 ${filename}:`)
+            addLog(`${String(content).substring(0, 500)}...`)
+          })
+        } else if (!hasOutput) {
+          addLog(`Output: ${data.outputPath || 'N/A'}`)
+        }
       } else {
         addLog(`✗ Workflow failed: ${data.error}`)
       }
@@ -101,16 +132,24 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-purple-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            AutoTaskOps
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Convert plain English into runnable Kestra workflows with AI
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                AutoTaskOps
+              </h1>
+              <p className="mt-2 text-lg text-gray-700 font-medium">
+                Turn English into Automation. No code. No YAML. Just one sentence.
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">✨ AI-Powered</span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">🚀 Live</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -119,36 +158,46 @@ export default function Home() {
           {/* Left Column: Input & Workflows */}
           <div className="space-y-6">
             {/* Natural Language Input */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Describe Your Workflow
-              </h2>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200 hover:border-purple-400 transition-all">
+              <div className="flex items-center space-x-3 mb-4">
+                <span className="text-3xl">🤖</span>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  What should your AI agent do?
+                </h2>
+              </div>
               <textarea
                 value={nlInput}
                 onChange={(e) => setNlInput(e.target.value)}
-                placeholder="Example: Fetch latest tech news, summarize it with AI, and send via email"
-                className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                placeholder="Try: 'Get weather for Tokyo and email me daily' or 'Fetch Bitcoin price every hour'..."
+                className="w-full h-36 px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-300 focus:border-purple-500 resize-none text-lg"
                 disabled={generating}
               />
               <button
                 onClick={handleGenerate}
-                disabled={generating}
-                className="mt-4 w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+                disabled={generating || !nlInput.trim()}
+                className="mt-5 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] disabled:scale-100 shadow-lg"
               >
-                {generating ? 'Generating...' : 'Generate Workflow'}
+                {generating ? '✨ Building Your Automation...' : '🚀 Build Automation'}
               </button>
             </div>
 
             {/* Workflows List */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Available Workflows
-              </h2>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  🎯 Your AI Automations
+                </h2>
+                <span className="text-sm text-purple-600 font-semibold bg-purple-50 px-3 py-1 rounded-full">
+                  {workflows.length} active
+                </span>
+              </div>
               <div className="space-y-3">
                 {workflows.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">
-                    No workflows yet. Generate one above!
-                  </p>
+                  <div className="text-center py-12">
+                    <p className="text-2xl mb-2">🎨</p>
+                    <p className="text-gray-600 font-medium">Your AI agent is waiting...</p>
+                    <p className="text-gray-400 text-sm mt-1">Describe what you need above!</p>
+                  </div>
                 ) : (
                   workflows.map((workflow) => (
                     <WorkflowCard
