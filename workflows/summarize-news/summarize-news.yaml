@@ -1,0 +1,25 @@
+id: summarize-news
+namespace: autotaskops
+description: Fetch latest news and generate AI-powered summary
+
+tasks:
+  - id: fetch
+    type: io.kestra.core.tasks.scripts.Python
+    description: Fetch news articles from sources
+    script: scripts/fetch_news.py
+
+  - id: summarize
+    type: io.kestra.core.tasks.scripts.Python
+    description: Generate summary using AI
+    script: scripts/summarize.py
+
+  - id: output
+    type: io.kestra.core.tasks.scripts.Bash
+    description: Save and output results
+    script: scripts/send_email.bat
+
+triggers:
+  - id: schedule
+    type: io.kestra.core.models.triggers.types.Schedule
+    cron: "0 7 * * *"
+    description: Run daily at 7 AM
