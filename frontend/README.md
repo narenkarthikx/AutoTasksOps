@@ -1,40 +1,34 @@
 # AutoTaskOps Frontend
 
-Next.js TypeScript frontend for AutoTaskOps workflow generator.
+Next.js TypeScript UI for workflow management.
 
-## Setup
+## 🚀 Quick Start
 
-```bash
+```powershell
 npm install
-```
-
-## Development
-
-```bash
 npm run dev
 ```
 
-Runs the app in development mode at [http://localhost:3000](http://localhost:3000)
+Opens on **http://localhost:3000**
 
-## Build
+## 📚 Documentation
+
+**Full documentation:** [Frontend Guide](../docs/guides/FRONTEND_GUIDE.md)
+
+## 🔗 Key Files
+
+- `pages/index.tsx` - Main UI
+- `components/` - React components
+- `styles/` - Tailwind CSS
+
+## 🌍 Environment
+
+Create `.env.local`:
 
 ```bash
-npm run build
-npm start
-```
-
-## Environment Variables
-
-Create a `.env.local` file:
-
-```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-## Features
+---
 
-- Natural language workflow input
-- Real-time workflow generation
-- Workflow execution with live logs
-- Responsive UI with Tailwind CSS
-- TypeScript for type safety
+**For complete setup, usage, and customization guides, see [../docs/guides/FRONTEND_GUIDE.md](../docs/guides/FRONTEND_GUIDE.md)**

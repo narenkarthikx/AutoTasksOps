@@ -129,6 +129,18 @@ Enable `DEMO_MOCK=true` in your environment to run without external API calls. T
 
 Perfect for demos, testing, and CI/CD!
 
+## 📚 Documentation
+
+**[→ View Complete Documentation](docs/README.md)**
+
+Quick Links:
+- **[Quick Start Guide](docs/guides/QUICK_START.md)** - Get running in 5 minutes
+- **[Backend API Reference](docs/api/BACKEND_API.md)** - Complete API docs
+- **[Frontend Guide](docs/guides/FRONTEND_GUIDE.md)** - UI documentation
+- **[Kestra Setup](docs/guides/KESTRA_SETUP.md)** - Orchestration setup
+- **[Example Workflow](docs/workflows/SUMMARIZE_NEWS.md)** - Workflow guide
+- **[Project Status](docs/PROJECT_COMPLETE.md)** - Completion checklist
+
 ## 🤝 Contributing
 
 1. Fork the repository
