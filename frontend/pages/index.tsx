@@ -3,6 +3,7 @@ import WorkflowCard from '../components/WorkflowCard'
 import LogsPanel from '../components/LogsPanel'
 import AgentTimeline, { TimelineEvent } from '../components/AgentTimeline'
 import YamlPreview from '../components/YamlPreview'
+import MetricsCard from '../components/MetricsCard'
 
 interface Workflow {
   id: string
@@ -19,6 +20,7 @@ export default function Home() {
   const [generating, setGenerating] = useState(false)
   const [runningWorkflow, setRunningWorkflow] = useState<string | null>(null)
   const [previewWorkflow, setPreviewWorkflow] = useState<string | null>(null)
+  const [demoMode, setDemoMode] = useState(false)
 
   // Fetch workflows on mount
   useEffect(() => {
@@ -54,7 +56,7 @@ export default function Home() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: nlInput }),
+        body: JSON.stringify({ text: nlInput, demoMode }),
       })
 
       const data = await response.json()
@@ -155,7 +157,16 @@ export default function Home() {
                 Turn English into Automation. No code. No YAML. Just one sentence.
               </p>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={demoMode}
+                  onChange={(e) => setDemoMode(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="text-sm font-semibold text-gray-700">🎭 Demo Mode</span>
+              </label>
               <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">✨ AI-Powered</span>
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">🚀 Live</span>
             </div>
@@ -223,8 +234,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Column: Logs & Timeline */}
+          {/* Right Column: Metrics, Timeline & Logs */}
           <div className="lg:sticky lg:top-8 h-fit space-y-6">
+            <MetricsCard workflows={workflows} logs={logs} />
             <AgentTimeline events={timeline} />
             <LogsPanel logs={logs} onClear={() => setLogs([])} />
           </div>

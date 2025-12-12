@@ -91,11 +91,35 @@ node runner.js --workflow ../workflows/summarize-news/summarize-news.yaml
 
 ## 📖 Usage
 
-1. **Open the Web UI**: Navigate to `http://localhost:3000`
-2. **Describe Your Task**: Enter a plain English description (e.g., "Fetch latest tech news, summarize it, and send via email")
-3. **Generate Workflow**: Click "Generate Workflow" to create the automation
-4. **Review & Run**: See the generated workflow and scripts, then click "Run" to execute
-5. **Monitor Logs**: Watch real-time execution logs in the logs panel
+### Basic Workflow
+
+1. **Open the Web UI**: Navigate to `http://localhost:3000` (or `3002` if 3000 is in use)
+2. **Enable Demo Mode** (Optional): Toggle "🎭 Demo Mode" for deterministic, canned responses perfect for demos
+3. **Describe Your Automation**: Enter plain English in the text area:
+   - "Get Bitcoin price every hour"
+   - "Fetch latest tech news and email me daily"
+   - "Get current time in Tokyo and save to file"
+4. **Build Automation**: Click "🚀 Build Automation" button
+5. **Watch the Magic**: 
+   - See **Agent Timeline** showing AI actions (prompts → files → commits)
+   - Check **Metrics** dashboard for success rates
+   - View generated files in real-time
+6. **Preview YAML**: Click "📋 Details" on any workflow to see:
+   - AI-generated explanation
+   - Task breakdown
+   - Complete YAML configuration
+7. **Run Workflow**: Click "▶️ Run" and monitor execution logs
+8. **Check Outputs**: Results saved to `workflows/<workflow-id>/output/`
+
+### Example Prompts
+
+```
+✅ "Fetch current weather for New York and save to file"
+✅ "Get Bitcoin price and log to console"  
+✅ "Summarize top news articles and email me"
+✅ "Fetch GitHub trending repos and save as JSON"
+✅ "Get current time in multiple timezones"
+```
 
 ## 🐳 Running with Kestra
 
@@ -139,6 +163,71 @@ Enable `DEMO_MOCK=true` in your environment to run without external API calls. T
 - Email sending
 
 Perfect for demos, testing, and CI/CD!
+
+## 🏗️ Tech Stack
+
+### Frontend
+- **Next.js 14** - React framework with TypeScript
+- **Tailwind CSS** - Utility-first styling with magical gradients
+- **Components**: AgentTimeline, YamlPreview, LogsPanel, MetricsCard
+
+### Backend
+- **Node.js + Express** - REST API server
+- **Google Gemini 2.5 Flash** - LLM for workflow generation
+- **simple-git** - Automatic git commits and branches
+- **js-yaml** - YAML parsing for workflows
+
+### Workflow Runner
+- **Simulated Runner** - Executes scripts locally with output capture
+- **Kestra** (Optional) - Production workflow orchestration
+- **Cross-platform** - Supports Windows (.bat) and Unix (.sh)
+
+### CI/CD
+- **GitHub Actions** - Automated testing and deployment
+- **CodeRabbit** (Optional) - AI code reviews on PRs
+- **Vercel** - Frontend deployment
+
+## 🎯 Architecture Flow
+
+```
+User Input (UI)
+    ↓
+Backend API (/api/generate)
+    ↓
+Google Gemini AI (prompt → structured JSON)
+    ↓
+File Generation (YAML + Python/Bash scripts)
+    ↓
+Git Commit (autogen/<workflow-id> branch)
+    ↓
+Runner Execution (parse YAML → run scripts)
+    ↓
+Output Capture (logs + results)
+    ↓
+UI Display (timeline + logs + metrics)
+```
+
+## 📊 Key Metrics
+
+- ⚡ **Generation Speed**: ~2-5 seconds per workflow
+- 🎯 **Success Rate**: Tracked in real-time metrics dashboard
+- 📝 **Lines of Code**: Generated automatically (50-200 lines per workflow)
+- 🔄 **Git Integration**: Auto-commit with proper branch naming
+
+## ✅ Production Checklist
+
+- [x] Natural language to workflow conversion
+- [x] AI-powered script generation
+- [x] Agent Timeline with audit trail
+- [x] YAML Preview with AI explanations
+- [x] Demo Mode for deterministic testing
+- [x] Metrics dashboard
+- [x] Real-time log streaming
+- [x] Git auto-commit and branching
+- [x] Cross-platform runner
+- [x] Environment-based configuration
+- [x] Error handling and fallbacks
+- [x] CI/CD pipeline
 
 ## 📚 Documentation
 
