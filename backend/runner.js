@@ -165,9 +165,27 @@ class WorkflowRunner {
       const results = [];
 
       for (const task of tasks) {
-        const scriptPath = task.script || task.scriptPath;
+        // Support multiple formats: script, scriptPath, or commands array (Kestra format)
+        let scriptPath = task.script || task.scriptPath;
+        
+        // Parse Kestra commands format
+        if (!scriptPath && task.commands && Array.isArray(task.commands)) {
+          // Extract script path from commands like "python scripts/script.py" or "bash scripts/script.sh"
+          const command = task.commands[0]; // Get first command
+          if (command) {
+            // Match: python/bash/node followed by script path
+            const match = command.match(/(?:python|python3|bash|sh|node)\s+(.+)/);
+            if (match) {
+              scriptPath = match[1].trim();
+            }
+          }
+        }
+        
         if (!scriptPath) {
-          this.log('warning', `Task has no script defined`, { task: task.id });
+          this.log('warning', `Task has no script defined`, { 
+            task: task.id,
+            commands: task.commands 
+          });
           continue;
         }
 
