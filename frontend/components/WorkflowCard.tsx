@@ -6,10 +6,11 @@ interface WorkflowCardProps {
     status: 'ready' | 'running' | 'completed' | 'error'
   }
   onRun: (workflowId: string) => void
+  onViewDetails?: (workflowId: string) => void
   isRunning: boolean
 }
 
-export default function WorkflowCard({ workflow, onRun, isRunning }: WorkflowCardProps) {
+export default function WorkflowCard({ workflow, onRun, onViewDetails, isRunning }: WorkflowCardProps) {
   const statusColors = {
     ready: 'bg-green-100 text-green-800',
     running: 'bg-blue-100 text-blue-800',
@@ -33,13 +34,23 @@ export default function WorkflowCard({ workflow, onRun, isRunning }: WorkflowCar
             <span className="text-xs text-gray-400">• AI-Generated</span>
           </div>
         </div>
-        <button
-          onClick={() => onRun(workflow.id)}
-          disabled={isRunning}
-          className="ml-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-bold rounded-lg transition-all transform hover:scale-105 disabled:scale-100 shadow-md"
-        >
-          {isRunning ? '⚡ Running...' : '▶️ Run'}
-        </button>
+        <div className="ml-4 flex flex-col space-y-2">
+          {onViewDetails && (
+            <button
+              onClick={() => onViewDetails(workflow.id)}
+              className="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-sm font-semibold rounded-lg transition-colors"
+            >
+              📋 Details
+            </button>
+          )}
+          <button
+            onClick={() => onRun(workflow.id)}
+            disabled={isRunning}
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-bold rounded-lg transition-all transform hover:scale-105 disabled:scale-100 shadow-md"
+          >
+            {isRunning ? '⚡ Running...' : '▶️ Run'}
+          </button>
+        </div>
       </div>
     </div>
   )

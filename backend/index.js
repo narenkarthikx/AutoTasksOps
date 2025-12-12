@@ -9,6 +9,7 @@ import fs from 'fs/promises';
 import { generateWorkflow } from './routes/generate.js';
 import { listWorkflows } from './routes/workflows.js';
 import { runWorkflow } from './routes/run.js';
+import { getWorkflowDetails } from './routes/workflow-details.js';
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
 // API Routes
 app.post('/api/generate', generateWorkflow);
 app.get('/api/workflows', listWorkflows);
+app.get('/api/workflows/:id/details', getWorkflowDetails);
 app.post('/api/run', runWorkflow);
 
 // Health check

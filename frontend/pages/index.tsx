@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import WorkflowCard from '../components/WorkflowCard'
 import LogsPanel from '../components/LogsPanel'
 import AgentTimeline, { TimelineEvent } from '../components/AgentTimeline'
+import YamlPreview from '../components/YamlPreview'
 
 interface Workflow {
   id: string
@@ -17,6 +18,7 @@ export default function Home() {
   const [timeline, setTimeline] = useState<TimelineEvent[]>([])
   const [generating, setGenerating] = useState(false)
   const [runningWorkflow, setRunningWorkflow] = useState<string | null>(null)
+  const [previewWorkflow, setPreviewWorkflow] = useState<string | null>(null)
 
   // Fetch workflows on mount
   useEffect(() => {
@@ -212,6 +214,7 @@ export default function Home() {
                       key={workflow.id}
                       workflow={workflow}
                       onRun={handleRun}
+                      onViewDetails={(id) => setPreviewWorkflow(id)}
                       isRunning={runningWorkflow === workflow.id}
                     />
                   ))
@@ -227,6 +230,15 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* YAML Preview Modal */}
+      {previewWorkflow && (
+        <YamlPreview
+          workflowId={previewWorkflow}
+          isOpen={!!previewWorkflow}
+          onClose={() => setPreviewWorkflow(null)}
+        />
+      )}
     </div>
   )
 }
