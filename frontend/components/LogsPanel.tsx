@@ -14,20 +14,27 @@ export default function LogsPanel({ logs, onClear }: LogsPanelProps) {
   }, [logs])
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">Execution Logs</h2>
+    <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <span className="text-2xl">⚡</span>
+          <h2 className="text-2xl font-bold text-gray-900">Your Agent is Working...</h2>
+        </div>
         <button
           onClick={onClear}
-          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-400 rounded transition-colors"
+          className="px-4 py-2 text-sm font-semibold text-purple-600 hover:text-purple-800 border-2 border-purple-200 hover:border-purple-400 rounded-lg transition-all"
         >
           Clear
         </button>
       </div>
       
-      <div className="bg-gray-900 rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm">
+      <div className="bg-gray-900 rounded-xl p-5 h-[500px] overflow-y-auto font-mono text-sm shadow-inner">
         {logs.length === 0 ? (
-          <p className="text-gray-500">No logs yet. Generate or run a workflow to see logs.</p>
+          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+            <p className="text-4xl mb-3">🧠</p>
+            <p className="font-semibold">Waiting for your command...</p>
+            <p className="text-xs mt-1">Create an automation to see live execution</p>
+          </div>
         ) : (
           <div className="space-y-1">
             {logs.map((log, index) => (

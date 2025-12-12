@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import config from '../config.js';
 
 /**
  * LLM Service - handles AI generation with mock mode support
@@ -8,15 +9,16 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
  * - DEMO_MOCK: Set to 'true' for deterministic mock responses
  */
 
-const DEMO_MOCK = process.env.DEMO_MOCK === 'true';
+const DEMO_MOCK = config.DEMO_MOCK;
 
 // Initialize Gemini AI client
 let genAI = null;
 let model = null;
 
-if (!DEMO_MOCK && process.env.GOOGLE_AI_API_KEY) {
-  genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-  model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+if (!DEMO_MOCK && config.GOOGLE_AI_API_KEY) {
+  genAI = new GoogleGenerativeAI(config.GOOGLE_AI_API_KEY);
+  model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  console.log('✓ AI Model initialized: gemini-1.5-flash');
 }
 
 /**
@@ -26,9 +28,11 @@ if (!DEMO_MOCK && process.env.GOOGLE_AI_API_KEY) {
  */
 export async function generateWorkflowFromText(userInput) {
   if (DEMO_MOCK || !model) {
+    console.log('⚠️  Using MOCK mode - no AI call');
     return getMockWorkflow(userInput);
   }
 
+  console.log('🤖 Calling Google Gemini AI...');
   try {
     const prompt = `You are an automation workflow generator. Convert the following natural language request into a structured workflow.
 
@@ -68,9 +72,11 @@ Rules:
     const jsonMatch = text.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
     const jsonText = jsonMatch ? jsonMatch[1] : text;
     
+    console.log('✓ AI response received');
     return JSON.parse(jsonText);
   } catch (error) {
-    console.error('LLM generation error:', error);
+    console.error('❌ LLM generation error:', error.message);
+    console.log('⚠️  Falling back to MOCK mode');
     // Fallback to mock on error
     return getMockWorkflow(userInput);
   }

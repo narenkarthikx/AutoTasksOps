@@ -18,21 +18,27 @@ export default function WorkflowCard({ workflow, onRun, isRunning }: WorkflowCar
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div className="border-2 border-purple-200 rounded-xl p-5 hover:shadow-lg hover:border-purple-400 transition-all bg-gradient-to-br from-white to-purple-50">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900">{workflow.name}</h3>
-          <p className="text-sm text-gray-600 mt-1">{workflow.description}</p>
-          <span className={`inline-block mt-2 px-2 py-1 text-xs font-medium rounded ${statusColors[workflow.status]}`}>
-            {workflow.status}
-          </span>
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="text-lg">🤖</span>
+            <h3 className="font-bold text-gray-900 text-lg">{workflow.name}</h3>
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed">{workflow.description}</p>
+          <div className="flex items-center space-x-2 mt-3">
+            <span className={`px-3 py-1 text-xs font-bold rounded-full ${statusColors[workflow.status]}`}>
+              {workflow.status === 'ready' ? '✅ Ready' : workflow.status === 'running' ? '⚡ Running' : workflow.status}
+            </span>
+            <span className="text-xs text-gray-400">• AI-Generated</span>
+          </div>
         </div>
         <button
           onClick={() => onRun(workflow.id)}
           disabled={isRunning}
-          className="ml-4 px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+          className="ml-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-bold rounded-lg transition-all transform hover:scale-105 disabled:scale-100 shadow-md"
         >
-          {isRunning ? 'Running...' : 'Run'}
+          {isRunning ? '⚡ Running...' : '▶️ Run'}
         </button>
       </div>
     </div>
