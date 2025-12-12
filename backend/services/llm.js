@@ -17,8 +17,8 @@ let model = null;
 
 if (!DEMO_MOCK && config.GOOGLE_AI_API_KEY) {
   genAI = new GoogleGenerativeAI(config.GOOGLE_AI_API_KEY);
-  model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-  console.log('✓ AI Model initialized: gemini-1.5-flash');
+  model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  console.log('✓ AI Model initialized: gemini-2.5-flash');
 }
 
 /**
@@ -34,35 +34,38 @@ export async function generateWorkflowFromText(userInput) {
 
   console.log('🤖 Calling Google Gemini AI...');
   try {
-    const prompt = `You are an automation workflow generator. Convert the following natural language request into a structured workflow.
+    const prompt = `You are an AI automation agent. Generate a complete, runnable workflow from this request:
 
-User Request: "${userInput}"
+"${userInput}"
 
-Generate a JSON response with this exact structure:
+Return ONLY valid JSON (no markdown, no explanations):
 {
-  "workflowName": "descriptive-name",
-  "description": "Brief description",
+  "workflowName": "unique-kebab-case-name",
+  "description": "Clear 1-sentence description",
   "schedule": "cron expression or null",
   "tasks": [
     {
-      "id": "task1",
-      "name": "Task Name",
-      "type": "python|bash|email|http",
-      "scriptName": "script_name.py",
-      "description": "What this task does"
+      "id": "unique_task_id",
+      "name": "Human Readable Task Name",
+      "type": "python|bash",
+      "scriptName": "descriptive_script.py",
+      "description": "What this specific task does"
     }
   ],
   "scripts": {
-    "script_name.py": "#!/usr/bin/env python3\\n# Script content here"
+    "descriptive_script.py": "#!/usr/bin/env python3\\nimport os\\nimport sys\\n\\n# Full working script with error handling\\n# Use environment variables for config\\n# Print progress and results\\n"
   }
 }
 
-Rules:
-1. Keep it simple and runnable
-2. Use realistic file names
-3. Include error handling in scripts
-4. Add comments to explain logic
-5. Support mock mode with DEMO_MOCK env var`;
+CRITICAL RULES:
+1. workflowName MUST be unique, derived from the request (use kebab-case)
+2. Scripts MUST be complete and runnable (not templates)
+3. Use requests library for APIs, proper error handling
+4. Add print statements for progress tracking
+5. Support DEMO_MOCK env var for deterministic testing
+6. Use real APIs (newsapi.org, openweathermap, etc.) when applicable
+7. Each script should check for required env vars and provide helpful errors
+8. Return ONLY the JSON object, nothing else`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -252,9 +255,17 @@ echo "✓ Output copied to $OUTPUT_DIR/latest_summary.txt"
     };
   }
   
-  // Generic workflow template
+  // Generic workflow template - create unique name from input
+  const workflowName = userInput
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')  // Remove special chars
+    .trim()
+    .split(/\s+/)
+    .slice(0, 5)  // Max 5 words
+    .join('-') || 'custom-workflow';
+  
   return {
-    workflowName: 'custom-workflow',
+    workflowName,
     description: `Workflow for: ${userInput}`,
     schedule: null,
     tasks: [

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import WorkflowCard from '../components/WorkflowCard'
 import LogsPanel from '../components/LogsPanel'
+import AgentTimeline, { TimelineEvent } from '../components/AgentTimeline'
 
 interface Workflow {
   id: string
@@ -13,6 +14,7 @@ export default function Home() {
   const [nlInput, setNlInput] = useState('')
   const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [logs, setLogs] = useState<string[]>([])
+  const [timeline, setTimeline] = useState<TimelineEvent[]>([])
   const [generating, setGenerating] = useState(false)
   const [runningWorkflow, setRunningWorkflow] = useState<string | null>(null)
 
@@ -66,6 +68,12 @@ export default function Home() {
         if (data.workflow?.scripts) {
           addLog(`✓ Generated ${data.workflow.scripts.length} script(s)`)
         }
+        
+        // Update timeline with events from backend
+        if (data.timeline) {
+          setTimeline(data.timeline)
+        }
+        
         setNlInput('')
         fetchWorkflows()
       } else {
@@ -212,8 +220,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Column: Logs */}
-          <div className="lg:sticky lg:top-8 h-fit">
+          {/* Right Column: Logs & Timeline */}
+          <div className="lg:sticky lg:top-8 h-fit space-y-6">
+            <AgentTimeline events={timeline} />
             <LogsPanel logs={logs} onClear={() => setLogs([])} />
           </div>
         </div>

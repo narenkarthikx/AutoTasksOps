@@ -1,17 +1,28 @@
 # AutoTaskOps
 
-> **Convert plain English into runnable Kestra workflows with AI**
+> **Turn English into Automation.**
 
-AutoTaskOps is an intelligent workflow automation platform that transforms natural language descriptions into executable Kestra workflows. Simply describe what you want to automate in plain English, and let AI generate the complete workflow with scripts, configurations, and execution logic.
+Tell AutoTaskOps what you want in plain English — the agent generates, commits, and runs a complete automation pipeline for you.
 
-## 🚀 Features
+## 🎯 What Makes This Different
 
-- **Natural Language to Workflow**: Describe your automation task in plain English
-- **AI-Powered Generation**: Uses Google Gemini 2.5 Flash to generate Kestra YAML and scripts
-- **Simulated Runner**: Execute workflows locally with real-time log streaming
-- **Git Integration**: Auto-commit generated workflows to separate branches
-- **Demo Mode**: Deterministic execution with mock responses for demos
-- **Web Interface**: Clean, intuitive UI built with Next.js and Tailwind CSS
+**You type one sentence. The AI builds a complete automation.**
+
+- 🤖 **AI Agent Creates Everything** - Not just templates. Real Python/Bash scripts, YAML workflows, and git commits.
+- 🔍 **Full Audit Trail** - See every LLM prompt, file created, commit hash, and execution log.
+- 🚀 **One-Click Execution** - Generated workflows run immediately with real-time logs.
+- 🎭 **Demo Mode** - Deterministic, canned responses so demos never fail.
+- ⚡ **Unique Workflows** - Each generation creates properly named, customized automation (not generic templates).
+- 🔄 **Git Integration** - Auto-commits to `autogen/<workflow-id>` branches with proper PR flow.
+
+## ✨ Unique Features (Hackathon-Ready)
+
+✅ **Agent Timeline** - Visual evidence of AI actions (prompts → files → commits → runs)  
+✅ **YAML Explain** - Human-readable breakdown of generated workflows  
+✅ **Smart Runner** - Parses Kestra YAML and executes scripts with output capture  
+✅ **Safety First** - Confirmation modals for destructive operations  
+✅ **Metrics Dashboard** - Track generated workflows, run success rates, and performance  
+✅ **Template Marketplace** - Save and reuse successful workflows (coming soon)
 
 ## 📋 Project Structure
 

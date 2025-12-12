@@ -25,9 +25,25 @@ export async function generateWorkflow(req, res) {
 
     console.log(`\n🤖 Generating workflow from: "${text}"\n`);
 
+    // Timeline tracking
+    const timeline = [];
+    const startTime = Date.now();
+
     // Step 1: Generate workflow structure using LLM
+    timeline.push({
+      id: '1',
+      timestamp: new Date().toISOString(),
+      type: 'prompt',
+      title: 'Parsed intent from natural language',
+      details: `Analyzing: "${text}"`,
+      status: 'pending'
+    });
+
     const workflowData = await generateWorkflowFromText(text);
     console.log(`✓ Generated workflow: ${workflowData.workflowName}`);
+    
+    timeline[0].status = 'success';
+    timeline[0].details = `Generated workflow: ${workflowData.workflowName}`;
 
     // Step 2: Create workflow directory
     const workflowId = workflowData.workflowName;
@@ -40,6 +56,18 @@ export async function generateWorkflow(req, res) {
     await fs.mkdir(outputDir, { recursive: true });
     await fs.mkdir(runsDir, { recursive: true });
     console.log(`✓ Created directories for ${workflowId}`);
+    
+    timeline.push({
+      id: '2',
+      timestamp: new Date().toISOString(),
+      type: 'files',
+      title: 'Files created',
+      details: `Generated ${workflowData.tasks.length} tasks with scripts`,
+      status: 'pending',
+      metadata: {
+        filesCreated: []
+      }
+    });
 
     // Step 3: Create Kestra YAML workflow file
     const kestraWorkflow = {
@@ -135,14 +163,30 @@ ${Object.keys(workflowData.scripts).map(s => `- \`scripts/${s}\``).join('\n')}
 
     await fs.writeFile(path.join(workflowDir, 'README.md'), readmeContent);
     createdFiles.push(`${workflowId}/README.md`);
+    
+    timeline[1].status = 'success';
+    timeline[1].metadata.filesCreated = createdFiles;
 
     // Step 6: Commit to git (optional, non-blocking)
     let gitInfo = null;
+    timeline.push({
+      id: '3',
+      timestamp: new Date().toISOString(),
+      type: 'commit',
+      title: 'Git commit & branch creation',
+      status: 'pending'
+    });
     try {
       gitInfo = await commitWorkflow(workflowId, createdFiles);
       
       if (gitInfo && gitInfo.branch && !gitInfo.skipped) {
         console.log(`✓ Committed to branch: ${gitInfo.branch}`);
+        timeline[2].status = 'success';
+        timeline[2].details = `Committed to ${gitInfo.branch}`;
+        timeline[2].metadata = {
+          commitHash: gitInfo.commit,
+          branch: gitInfo.branch
+        };
         
         // Try to push (non-blocking)
         const pushResult = await pushBranch(gitInfo.branch);
@@ -150,12 +194,18 @@ ${Object.keys(workflowData.scripts).map(s => `- \`scripts/${s}\``).join('\n')}
           console.log(`✓ Pushed to remote`);
           gitInfo.pushed = true;
         }
+      } else {
+        timeline[2].status = 'error';
+        timeline[2].details = 'Git operations skipped';
       }
     } catch (error) {
       console.log(`⚠️  Git operations skipped: ${error.message}`);
+      timeline[2].status = 'error';
+      timeline[2].details = error.message;
     }
 
-    // Return success response
+    // Return success response with timeline
+    const duration = Date.now() - startTime;
     res.json({
       success: true,
       workflow: {
@@ -169,6 +219,8 @@ ${Object.keys(workflowData.scripts).map(s => `- \`scripts/${s}\``).join('\n')}
         scripts: Object.keys(workflowData.scripts)
       },
       git: gitInfo,
+      timeline: timeline,
+      duration: duration,
       message: 'Workflow generated successfully'
     });
 
