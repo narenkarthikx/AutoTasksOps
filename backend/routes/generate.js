@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
  */
 export async function generateWorkflow(req, res) {
   try {
-    const { text } = req.body;
+    const { text, demoMode } = req.body;
 
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
       return res.status(400).json({
@@ -23,7 +23,8 @@ export async function generateWorkflow(req, res) {
       });
     }
 
-    console.log(`\n🤖 Generating workflow from: "${text}"\n`);
+    const mode = demoMode ? '🎭 DEMO MODE' : '🤖 AI MODE';
+    console.log(`\n${mode} - Generating workflow from: "${text}"\n`);
 
     // Timeline tracking
     const timeline = [];
@@ -39,7 +40,7 @@ export async function generateWorkflow(req, res) {
       status: 'pending'
     });
 
-    const workflowData = await generateWorkflowFromText(text);
+    const workflowData = await generateWorkflowFromText(text, demoMode);
     console.log(`✓ Generated workflow: ${workflowData.workflowName}`);
     
     timeline[0].status = 'success';

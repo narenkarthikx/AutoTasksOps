@@ -24,10 +24,11 @@ if (!DEMO_MOCK && config.GOOGLE_AI_API_KEY) {
 /**
  * Generate a workflow from natural language input
  * @param {string} userInput - Natural language description
+ * @param {boolean} forceMock - Force mock mode regardless of env var
  * @returns {Promise<Object>} Generated workflow structure
  */
-export async function generateWorkflowFromText(userInput) {
-  if (DEMO_MOCK || !model) {
+export async function generateWorkflowFromText(userInput, forceMock = false) {
+  if (DEMO_MOCK || forceMock || !model) {
     console.log('⚠️  Using MOCK mode - no AI call');
     return getMockWorkflow(userInput);
   }
